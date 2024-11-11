@@ -244,7 +244,16 @@ The processes with lower nice values should receive more CPU time and hence calc
 - **Child processes with nice values 1 and 2** will print more primes compared to those with values 4 and 5.
 - This validates the priority-based scheduling since processes with higher priorities (lower nice values) are given preference.
 
-**Screenshot Placeholder:** ![test1_output](placeholder_image_1.png)
+#### Output of test1.c:
+
+<img width="662" alt="image" src="https://github.com/user-attachments/assets/4a71bab6-ad40-4239-a27c-575d13204289">
+
+Here, the output is cropped slightly and the outputs are unsynchronised because of the forks. But through manual verification, it is clear that the lower nice values receive more CPU time and hence calculate more prime numbers in a given period.
+
+An example of a synchronised expected output will be like this with more CPU time for lower nice values.
+![image](https://github.com/user-attachments/assets/6588e9e9-7e01-467c-865f-9b607b713cd7)
+
+
 
 ### Test 2: Identical Nice Values for All Processes (`test2.c`)
 
@@ -306,7 +315,8 @@ int main(int argc, char *argv[]) {
 #### Expected Output for `test2.c`
 Since all processes have the same nice value, the CPU time is equally divided among them. The output should indicate that all three processes completed roughly the same amount of work (i.e., calculating the same number of primes).
 
-**Screenshot Placeholder:** ![test2_output](placeholder_image_2.png)
+<img width="288" alt="image" src="https://github.com/user-attachments/assets/aac07a9d-9bff-46cf-8a20-a198039a7463">
+
 
 ### Test 3: Different Priorities for Simple Iterative Work (`test3.c`)
 
@@ -365,7 +375,8 @@ int main(int argc, char *argv[]) {
 #### Expected Output for `test3.c`
 The process with the highest priority (nice value 1) should complete its iterations first, followed by the medium priority process (nice value 3), and lastly the low priority process (nice value 5). This output order demonstrates the effectiveness of the priority scheduler.
 
-**Screenshot Placeholder:** ![test3_output](placeholder_image_3.png)
+<img width="683" alt="image" src="https://github.com/user-attachments/assets/203bdc2a-7729-4069-9aad-3535ee00a835">
+
 
 ### Test Results of our tests
 The results from the three test cases validate that the priority-based scheduler is working as intended:
