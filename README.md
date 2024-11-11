@@ -155,7 +155,10 @@ The program ensures proper error handling by validating argument count and range
 
 **Handling Out-of-Bounds Values**: The `nice.c` program and `sys_nice` system call ensure that nice values are always between 1 and 5. If a value outside this range is passed, the command fails gracefully, informing the user that the input is invalid.
 
-### Test Results Summary
+### Test Results our outputs
+
+<img width="495" alt="image" src="https://github.com/user-attachments/assets/04b66a34-70f8-48b0-bd2a-8021e9bb9631">
+
 
 The `nice.c` utility was tested with valid and invalid inputs to ensure correct behavior. The utility worked as expected:
 - **Valid Inputs**: Successfully updated the nice value, printing the previous value.
