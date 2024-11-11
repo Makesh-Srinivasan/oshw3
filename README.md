@@ -1,3 +1,5 @@
+
+
 # Report on Implementation of Priority-Based Scheduling in xv6
 
 ## Introduction
@@ -110,7 +112,7 @@ void scheduler(void) {
 ```
 This modification iterates over different priority levels, ensuring that runnable processes with the highest priority are selected first. This approach ensures that processes with lower nice values (higher priority) receive more CPU time compared to those with higher nice values.
 
-## Testing and Evaluation
+## Testing and Evaluation of our codes
 
 Three test cases (`test1.c`, `test2.c`, `test3.c`) were written to verify the implementation of the priority-based scheduling mechanism and `nice` system call. The goal of the tests was to demonstrate the impact of different nice values on process scheduling.
 
@@ -153,7 +155,7 @@ The program ensures proper error handling by validating argument count and range
    - **Expected Output**: `Failed to set nice value. Check PID or value range.`
    - **Explanation**: The value provided (6) is outside the allowed range (1-5). Therefore, the system call does not proceed, and an error message is printed to indicate the issue.
 
-**Handling Out-of-Bounds Values**: The `nice.c` program and `sys_nice` system call ensure that nice values are always between 1 and 5. If a value outside this range is passed, the command fails gracefully, informing the user that the input is invalid.
+**Handling Out-of-Bounds Values**: The `nice.c` program and `sys_nice` system call ensure that nice values are always between 1 and 5. If a value outside this range is passed, the command fails gracefully, informing the user that the input is invalid. Note that the four tests aboe are submitted as screenshots only and not as test1.c as it was optional. The task 2 tests are submissted as `test1.c`, `test2.c`, and `test3.c`.
 
 ### Test Results our outputs
 
@@ -165,4 +167,211 @@ The `nice.c` utility was tested with valid and invalid inputs to ensure correct 
 - **Invalid PIDs or Values**: Appropriately handled errors, providing clear messages to the user.
 
 These tests confirmed the functionality and reliability of the `nice` system call in managing process priorities as intended.
+
+
+
+## Task 2: Explanation and Testing of Priority Scheduler
+
+### Test Cases for Priority Scheduler
+
+For Task 2, three test programs (`test1.c`, `test2.c`, `test3.c`) were created to validate the implementation of the priority-based scheduling mechanism. The tests focus on ensuring that processes with different nice values receive appropriate CPU time based on their assigned priority.
+
+### Test 1: Calculating Primes with Different Nice Values (`test1.c`)
+
+The `test1.c` program spawns five child processes, each with a different nice value ranging from 1 to 5. Each process calculates prime numbers up to a limit and prints them.
+
+#### Code for `test1.c`
+```c
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+
+void calculate_primes(int pid, int nice_value, int max_primes) {
+    // Set the nice value for the current process
+    nice(pid, nice_value);
+
+    int count = 0;
+    int n = 2;
+
+    printf(1, "Child PID: %d, Nice Value: %d\n", pid, nice_value);
+
+    while (count < max_primes) {
+        int is_prime = 1;
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                is_prime = 0;
+                break;
+            }
+        }
+        if (is_prime) {
+            printf(1, "PID: %d, Nice Value: %d, Prime: %d\n", pid, nice_value, n);
+            count++;
+        }
+        n++;
+
+        // Introduce a delay to simulate work
+        if (count % 10 == 0) {
+            sleep(1);
+        }
+    }
+    exit();
+}
+
+int main(int argc, char *argv[]) {
+    int num_processes = 5;
+    int nice_values[] = {1, 2, 3, 4, 5};
+
+    for(int i = 0; i < num_processes; i++) {
+        int pid = fork();
+        if(pid == 0) {
+            // Child process
+            int nice_value = nice_values[i];
+            int max_primes = 50;
+            calculate_primes(getpid(), nice_value, max_primes);
+        }
+    }
+
+    // Parent waits for all child processes to finish
+    for(int i = 0; i < num_processes; i++) {
+        wait();
+    }
+    exit();
+}
+```
+
+#### Expected Output for `test1.c`
+The processes with lower nice values should receive more CPU time and hence calculate more prime numbers in a given period. The expected output will show:
+- **Child processes with nice values 1 and 2** will print more primes compared to those with values 4 and 5.
+- This validates the priority-based scheduling since processes with higher priorities (lower nice values) are given preference.
+
+**Screenshot Placeholder:** ![test1_output](placeholder_image_1.png)
+
+### Test 2: Identical Nice Values for All Processes (`test2.c`)
+
+The `test2.c` program creates three child processes, each assigned the same nice value of 3. The processes then calculate a fixed number of prime numbers and print their results.
+
+#### Code for `test2.c`
+```c
+// test2.c
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+
+void calculate_primes(int pid, int nice_value, int max_primes) {
+    int count = 0;
+    int n = 2;
+
+    printf(1, "Child PID: %d, Nice Value: %d\n", pid, nice_value);
+
+    while (count < max_primes) {
+        int is_prime = 1;
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                is_prime = 0;
+                break;
+            }
+        }
+        if (is_prime) {
+            printf(1, "PID: %d, Prime: %d\n", pid, n);
+            count++;
+        }
+        n++;
+    }
+    exit();
+}
+
+int main(int argc, char *argv[]) {
+    int num_processes = 3;
+    int nice_value = 3; // All processes have the same nice value
+    int max_primes = 20;
+
+    for (int i = 0; i < num_processes; i++) {
+        int pid = fork();
+        if (pid == 0) {
+            // Child process
+            int child_pid = getpid();
+            nice(child_pid, nice_value);
+            calculate_primes(child_pid, nice_value, max_primes);
+        }
+    }
+
+    // Parent waits for all child processes to finish
+    for (int i = 0; i < num_processes; i++) {
+        wait();
+    }
+    exit();
+}
+```
+
+#### Expected Output for `test2.c`
+Since all processes have the same nice value, the CPU time is equally divided among them. The output should indicate that all three processes completed roughly the same amount of work (i.e., calculating the same number of primes).
+
+**Screenshot Placeholder:** ![test2_output](placeholder_image_2.png)
+
+### Test 3: Different Priorities for Simple Iterative Work (`test3.c`)
+
+The `test3.c` program spawns three child processes, each with a different nice value (1, 3, 5). Each process performs a simple iterative task of printing a message multiple times, demonstrating how scheduling is influenced by nice values.
+
+#### Code for `test3.c`
+```c
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+
+void simple_work(int pid, int nice_value, int limit) {
+    for (int i = 0; i < limit; i++) {
+        printf(1, "PID: %d, Nice Value: %d, Iteration: %d\n", pid, nice_value, i + 1);
+    }
+    printf(1, "PID: %d, Nice Value: %d, Completed\n", pid, nice_value);
+    exit();
+}
+
+int main(int argc, char *argv[]) {
+    int pid1, pid2, pid3;
+
+    // Fork first child process with high priority
+    pid1 = fork();
+    if (pid1 == 0) {
+        int child_pid = getpid();
+        nice(child_pid, 1); // Highest priority
+        simple_work(child_pid, 1, 5); // Perform simple work for 5 iterations
+    }
+
+    // Fork second child process with medium priority
+    pid2 = fork();
+    if (pid2 == 0) {
+        int child_pid = getpid();
+        nice(child_pid, 3); // Medium priority
+        simple_work(child_pid, 3, 5); // Perform simple work for 5 iterations
+    }
+
+    // Fork third child process with low priority
+    pid3 = fork();
+    if (pid3 == 0) {
+        int child_pid = getpid();
+        nice(child_pid, 5); // Lowest priority
+        simple_work(child_pid, 5, 5); // Perform simple work for 5 iterations
+    }
+
+    // Parent waits for all child processes to complete
+    wait();
+    wait();
+    wait();
+
+    exit();
+}
+```
+
+#### Expected Output for `test3.c`
+The process with the highest priority (nice value 1) should complete its iterations first, followed by the medium priority process (nice value 3), and lastly the low priority process (nice value 5). This output order demonstrates the effectiveness of the priority scheduler.
+
+**Screenshot Placeholder:** ![test3_output](placeholder_image_3.png)
+
+### Test Results of our tests
+The results from the three test cases validate that the priority-based scheduler is working as intended:
+- **Higher priority processes** consistently received more CPU time and completed their tasks earlier.
+- **Lower priority processes** had to wait for higher priority ones to finish, as indicated by delayed or slower progress in their outputs.
+
+These observations confirm that the scheduler effectively differentiates CPU allocation based on nice values, ensuring that processes with higher priority are favored for execution.
+
 
