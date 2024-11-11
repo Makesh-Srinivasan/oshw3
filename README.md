@@ -318,6 +318,16 @@ Since all processes have the same nice value, the CPU time is equally divided am
 
 <img width="288" alt="image" src="https://github.com/user-attachments/assets/aac07a9d-9bff-46cf-8a20-a198039a7463">
 
+Three Child Processes: The output begins with the lines indicating that three child processes were spawned, each with a nice value of 3.
+```
+Child PID: 18, Nice Value: 3
+Child PID: 19, Nice Value: 3
+Child PID: 20, Nice Value: 3
+```
+Garbled Output: The prime number calculations are printed, but they appear to be mixed and unsynchronized. There are multiple instances where the characters are jumbled together, likely because all three processes were printing to the console at the same time. 
+
+Since all processes have the same nice value, they are given equal opportunity to run. This means that the scheduler keeps switching between the processes, and they each get time slices for execution.As a result, the printf statements from different processes are being executed concurrently, leading to overlapping text and jumbled characters in the output. This is because printf operations are not atomic—they can be interrupted in the middle, causing one process's output to mix with that of another. 
+
 
 ### Test 3: Different Priorities for Simple Iterative Work (`test3.c`)
 
