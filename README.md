@@ -378,6 +378,7 @@ The process with the highest priority (nice value 1) should complete its iterati
 
 <img width="683" alt="image" src="https://github.com/user-attachments/assets/203bdc2a-7729-4069-9aad-3535ee00a835">
 
+From this output, the expected priority order was followed: PID 22 (highest priority) completed first, followed by PID 23, and then PID 24 (lowest priority). The final output reflects that higher-priority processes received CPU time before the lower-priority ones. The unsynchronized and overlapping text is an expected side effect when multiple processes print to the console without any locking mechanism to ensure orderly output.
 
 ### Test Results of our tests
 The results from the three test cases validate that the priority-based scheduler is working as intended:
