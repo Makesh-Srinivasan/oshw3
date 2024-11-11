@@ -251,6 +251,7 @@ The processes with lower nice values should receive more CPU time and hence calc
 Here, the output is cropped slightly and the outputs are unsynchronised because of the forks. But through manual verification, it is clear that the lower nice values receive more CPU time and hence calculate more prime numbers in a given period.
 
 An example of a synchronised expected output will be like this with more CPU time for lower nice values.
+
 ![image](https://github.com/user-attachments/assets/6588e9e9-7e01-467c-865f-9b607b713cd7)
 
 
